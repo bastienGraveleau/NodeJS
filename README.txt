@@ -1,25 +1,3 @@
-finir : le GET / Messengers
-post / Messengers by discussion 
-
-discussion: 
-    get discussion 
-
-    du coup ajouter les messages à une (post)discussion 
-    plus get les messages d'une discussion
-    
-
-crypt -> cookie sha
-
-pour créer une message et le get dans une discussion 
-
-chosir l'index de la discussion 
-dans le get message
-voir si une discussion correspond a la demande
-si c'est le cas push le message sur une 
-discussion si non message d'erreur.
-
-
-
 
 --Devoir NodeJS--
 
