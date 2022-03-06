@@ -5,8 +5,9 @@ const bodyParser = require('body-parser')
 const {getUsers, saveUsers, saveMessage, getMessage, getDiscussions, saveDiscussion} = require('./lib/model')
 const cookieParser = require('cookie-parser')
 const bcrypt = require('bcrypt');
-const { send, cookie } = require('express/lib/response')
+const { send } = require('express/lib/response')
 const saltRounds = 10;
+var date = new Date();
 
 app.use(bodyParser.json())
 app.use(cookieParser())
@@ -87,15 +88,11 @@ if (!user) {
   res.send({
     user
   })
-  const cookie= req.cookies.auth
-  const hachageCookie= await bcrypt.hash ( cookie , saltRounds ) ;
 })
-
-
 
 app.get('/users/me', (req, res) => {
   res.send({
-    user: hachageCookie
+    user: req.cookies.auth
   })
 })
 
@@ -144,21 +141,16 @@ app.post('/messages', async (req, res) => {
   }
   
   const allDiscussions = await getDiscussions()
-  // const postList = await getMessage()
-  const id = allDiscussions[0]['id']
+  const postList = await getMessage()
+  
   const newMessage = {
     user : req.cookies.auth,
     post : req.body.post,
-    indexOfDiscussion : req.body.indexOfDiscussion
+    date : date,
   }
-  if (req.body.indexOfDiscussion === id) {
-    allDiscussions.push(newMessage)
-  }
-  
-  // postList.push(newMessage)
+  postList.push(newMessage)
   try {
-    // await saveMessage(newMessage)
-    await saveDiscussion(allDiscussions)
+    await saveMessage(newMessage)
     res.status(201).send({
       message: newMessage
     })
@@ -167,7 +159,7 @@ app.post('/messages', async (req, res) => {
   }
 })
 
-//Get all messages
+//Get tout les messages
 
 app.get('/messages', async (req, res) => {
  const postList = await getMessage()
@@ -182,6 +174,22 @@ app.get('/messages', async (req, res) => {
     AllPost: postList
   })
 })
+
+// Get toutes les discussions
+
+app.get('/discussions', async (req, res) => {
+  const allDiscussions = await getDiscussions()
+  
+   if (!req.cookies.auth) {
+     res.status(400).send({
+       message: 'no auth'
+     })
+     return
+   }
+   res.send({
+     discussions: allDiscussions
+   })
+ })
 
 //Console Localhost
 
